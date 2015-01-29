@@ -8,7 +8,9 @@ require 'pp'
 
 url = URI.parse('http://connpass.com/api/v1/event/?keyword=python ')
 content = Net::HTTP.get(url)
-c = content.split(',')
+c = content.split('{')
+d = c.to_s
+e = d.split(',')
 File.open("test.txt", "w") do |f|
-	f.puts c
+	f.puts e
 end
