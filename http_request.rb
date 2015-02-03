@@ -1,16 +1,16 @@
-#! ruby -EUTF-8
 # coding: utf-8
-require 'net/http'
-require 'uri'
+require 'open-uri'
 require 'pp'
+require 'json'
 
 #connpassAPIをたたくHTTPクライアント
-
-url = URI.parse('http://connpass.com/api/v1/event/?keyword=python ')
-content = Net::HTTP.get(url)
-c = content.split('{')
-d = c.to_s
-e = d.split(',')
+html = open('http://connpass.com/api/v1/event/?keyword=python').read
+json = JSON.parser.new(html)
+hash = json.parse()
+pp hash
+#イベント毎に分割して、それぞれ処理していく
 File.open("test.txt", "w") do |f|
-	f.puts e
+	f.puts 
+	f.puts hash
+	f.puts 
 end
