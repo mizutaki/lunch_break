@@ -7,7 +7,7 @@ class DBManager
 			@db = SQLite3::Database.new("test.db")
 			self.create_table
 		rescue# TODO テーブルの存在チェックを行ってあったら処理しない
-			pp "すでにすでにテーブルが存在します"
+			pp "すでにテーブルが存在します"
 		end
 	end
 

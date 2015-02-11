@@ -2,18 +2,20 @@
 require 'open-uri'
 require 'pp'
 require 'json'
+require 'yaml'
 require_relative 'dbmanager'
 
+config = YAML.load_file("config.yml")
+puts config
+url = config["url"] + config["option"]
 class Event
   attr_accessor :url, :title, :description
 end
 
-#connpassAPIをたたくHTTPクライアント
-html = open('http://connpass.com/api/v1/event/?keyword=python&count=2').read
+html = open(url).read
 json = JSON.parser.new(html)
 hash = json.parse()
 db = DBManager.new
-puts db.class
 arr = []
 h = {}
 hash.each do |key, value|
