@@ -3,10 +3,19 @@ require 'open-uri'
 require 'pp'
 require 'json'
 require 'yaml'
+require 'date'
 require_relative 'db_manager'
 
 config = YAML.load_file("config.yml")
-url = config["url"] + config["option"]
+current_date = Date.today
+after_date = current_date >> 1
+dates = []
+Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
+url = config["url"] + config["option"] + "&ymd="
+dates.each do |date|
+  url << date + ','
+end
+
 class Event
   attr_accessor :url, :title, :description
 end
