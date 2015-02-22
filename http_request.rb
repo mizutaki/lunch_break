@@ -3,10 +3,9 @@ require 'open-uri'
 require 'pp'
 require 'json'
 require 'yaml'
-require_relative 'dbmanager'
+require_relative 'db_manager'
 
 config = YAML.load_file("config.yml")
-puts config
 url = config["url"] + config["option"]
 class Event
   attr_accessor :url, :title, :description
@@ -17,11 +16,10 @@ json = JSON.parser.new(html)
 hash = json.parse()
 db = DBManager.new
 arr = []
-h = {}
 hash.each do |key, value|
   if key == "events" then
-    
     value.each do |arr|
+      next if db.record?(arr["event_url"])
       event = Event.new
       event.url = arr["event_url"]
       event.title = arr["title"]
