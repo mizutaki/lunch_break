@@ -7,17 +7,14 @@ require 'date'
 require_relative 'db_manager'
 
 class HTTPRequest
+  attr_accessor :url
+
+  def initialize
+    @url = get_url
+  end
+
   def call
-    config = YAML.load_file("config.yml")
-    current_date = Date.today
-    after_date = current_date >> 1
-    dates = []
-    Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
-    url = config["url"] + config["option"] + "&ymd="
-    dates.each do |date|
-      url << date + ','
-    end
-    html = open(url).read
+    html = open(@url).read
     json = JSON.parser.new(html)
     hash = json.parse()
     db = DBManager.new
@@ -32,4 +29,18 @@ class HTTPRequest
       end 
     end
   end
+
+  private
+    def get_url
+      config = YAML.load_file("config.yml")
+      current_date = Date.today
+      after_date = current_date >> 1
+      dates = []
+      Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
+      url = config["url"] + config["option"] + "&ymd="
+      dates.each do |date|
+        url << date + ','
+      end
+      return url
+    end
 end
