@@ -1,12 +1,11 @@
 # coding: utf-8
 require 'open-uri'
-require 'pp'
 require 'json'
 require 'yaml'
 require 'date'
 require_relative 'db_manager'
 
-class HTTPRequest
+class EventSearchJob
   attr_accessor :url
 
   def initialize
@@ -33,14 +32,20 @@ class HTTPRequest
   private
     def get_url
       config = YAML.load_file("config.yml")
-      current_date = Date.today
-      after_date = current_date >> 1
-      dates = []
-      Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
-      url = config["url"] + config["option"] + "&ymd="
+      url = config["connpass_url"] +"?"+ config["connpass_option_keyword"] +"&"+ config["connpass_option_order"] + "&" +config["connpass_option_ymd"]
+      dates = get_dates(1)
       dates.each do |date|
         url << date + ','
       end
       return url
+    end
+
+    #現在日時〜manth分の年月日を配列で取得する
+    def get_dates(month)
+      current_date = Date.today
+      after_date = current_date >> month
+      dates = []
+      Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
+      return dates
     end
 end
