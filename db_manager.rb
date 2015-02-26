@@ -3,13 +3,10 @@ require 'sqlite3'
 class DBManager
 	
 	def initialize
-		begin
 			@db = SQLite3::Database.new("test.db")
-			self.create_table
-		rescue# TODO テーブルの存在チェックを行ってあったら処理しない
-			puts "すでにテーブルが存在します"
-		end
-	end
+     table_count =  @db.execute("SELECT count(*) From sqlite_master WHERE type == 'table' AND tbl_name == 'test_table'").flatten
+     create_table if table_count.first == 0
+  end
 
 	def create_table
 		create_table_sql = <<SQL
