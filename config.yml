@@ -2,3 +2,7 @@ connpass_url: http://connpass.com/api/v1/event/
 connpass_option_keyword: keyword=ruby
 connpass_option_order: order=3
 connpass_option_ymd: ymd=
+
+mail_to: example.com
+mail_username: example.com
+mail_password: password

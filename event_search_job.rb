@@ -3,7 +3,9 @@ require 'open-uri'
 require 'json'
 require 'yaml'
 require 'date'
+require 'mail'
 require_relative 'db_manager'
+require_relative 'mail_sender'
 
 class EventSearchJob
   attr_accessor :url
@@ -24,6 +26,8 @@ class EventSearchJob
           db.transaction
           db.insert_table(arr["event_url"], arr["title"], arr["description"])
           db.commit
+          mail = MailSender.new(arr)
+          mail.send
         end
       end 
     end
