@@ -1,11 +1,11 @@
 # coding: utf-8
+$LOAD_PATH << File.dirname(__FILE__)
 require 'open-uri'
 require 'json'
 require 'yaml'
 require 'date'
-require 'mail'
-require_relative 'db_manager'
-require_relative 'mail_sender'
+require 'db_manager'
+require 'mail_sender'
 
 class EventSearchJob
   attr_accessor :url
