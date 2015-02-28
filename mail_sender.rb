@@ -4,7 +4,7 @@ class MailSender
   attr_accessor :mail
 
   def initialize(arr)
-    config = YAML.load_file("config.yml")
+    config = YAML.load_file("mail_config.yml")
     @mail = Mail.new do arr
             from "from@example.com"
             to config["mail_to"]

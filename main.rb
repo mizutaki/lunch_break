@@ -5,5 +5,5 @@ module Clockwork
     job.call
   end
 
-  every(1.seconds, EventSearchJob.new)
+  every(1.minutes, EventSearchJob.new)
 end

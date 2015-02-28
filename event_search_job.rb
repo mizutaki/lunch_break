@@ -3,53 +3,31 @@ $LOAD_PATH << File.dirname(__FILE__)
 require 'open-uri'
 require 'json'
 require 'yaml'
-require 'date'
 require 'db_manager'
 require 'mail_sender'
+require 'url_creator'
 
 class EventSearchJob
   attr_accessor :url
 
   def initialize
-    @url = get_url
+    @url = URLCreator.build_url(YAML.load_file('config.yml'))
   end
 
   def call
-    html = open(@url).read
-    json = JSON.parser.new(html)
-    hash = json.parse()
     db = DBManager.new
-    hash.each do |key, value|
-      if key == "events" then
-        value.each do |arr|
-          next if db.record?(arr["event_url"])
-          db.transaction
-          db.insert_table(arr["event_url"], arr["title"], arr["description"])
-          db.commit
-          mail = MailSender.new(arr)
-          mail.send
-        end
-      end 
+    @url.each do |url|
+      html = open(url).read
+      hash = JSON.parser.new(html).parse
+      hash["events"].each do |events|
+        events = events["event"] if events.key?("event") #ATND対応
+        next if db.record?(events["event_url"])
+        db.transaction
+        db.insert_table(events["event_url"], events["title"], events["description"])
+        db.commit
+        mail = MailSender.new(events)
+        mail.send
+      end
     end
   end
-
-  private
-    def get_url
-      config = YAML.load_file("config.yml")
-      url = config["connpass_url"] +"?"+ config["connpass_option_keyword"] +"&"+ config["connpass_option_order"] + "&" +config["connpass_option_ymd"]
-      dates = get_dates(1)
-      dates.each do |date|
-        url << date + ','
-      end
-      return url
-    end
-
-    #現在日時〜manth分の年月日を配列で取得する
-    def get_dates(month)
-      current_date = Date.today
-      after_date = current_date >> month
-      dates = []
-      Date.parse(current_date.to_s).upto(Date.parse(after_date.to_s)){|i| dates << i.strftime("%Y%m%d")}
-      return dates
-    end
 end
